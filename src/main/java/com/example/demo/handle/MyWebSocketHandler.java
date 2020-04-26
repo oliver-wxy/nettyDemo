@@ -3,7 +3,10 @@ package com.example.demo.handle;
 import com.example.demo.context.HandlerContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.util.UUID;
 
@@ -12,17 +15,22 @@ import java.util.UUID;
  * @create 2020-04-23 17:12
  **/
 public class MyWebSocketHandler extends SimpleChannelInboundHandler<Object> {
+
+    public static ChannelGroup clients = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("服务端channel通道激活-"+ctx.channel());
         HandlerContext.getInstance().addChannel(ctx, ctx.channel().remoteAddress()+"^"+ UUID.randomUUID());
         System.out.println("当前链路数量-"+HandlerContext.getInstance().getSize());
+        clients.add(ctx.channel());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("服务端channel通道注销-"+ctx.channel());
         HandlerContext.getInstance().removeChannel(ctx);
+        clients.remove(ctx.channel());
     }
 
     @Override
