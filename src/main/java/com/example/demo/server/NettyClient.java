@@ -104,7 +104,7 @@ public class NettyClient extends Thread{
 
 
         //进行握手
-        WebSocketClientHandshaker handshaker = WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, (String)null, true,new DefaultHttpHeaders());
+        WebSocketClientHandshaker handshaker = WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, (String)null, true,new DefaultHttpHeaders(), 65535 * 5);
         System.out.println("connect");
         final Channel channel=boot.connect(host,port).sync().channel();
         // channel.writeAndFlush(new TextWebSocketFrame("{\"op\": \"subscribe\", \"args\": [\"trade\"]}"));
